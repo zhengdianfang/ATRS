@@ -2,11 +2,8 @@ package com.zhengdianfang.atrs.repository
 
 import com.google.gson.Gson
 import com.zhengdianfang.atrs.repository.api.OrderApis
-import com.zhengdianfang.atrs.repository.dto.OrderRefundResponseDTO
-import com.zhengdianfang.atrs.repository.dto.ResponseCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -22,10 +19,12 @@ class OrderRemoteRepositoryTest {
     private lateinit var orderRemoteRepository: OrderRemoteRepository
     private val gson = Gson()
 
+
     @Before
     fun setUp() {
         mockWebServer = MockWebServer()
-        orderRemoteRepository = OrderRemoteRepository(
+        orderRemoteRepository = OrderRemoteRepository()
+        orderRemoteRepository.setOrderApis(
             Retrofit.Builder().baseUrl(mockWebServer.url("/"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(OrderApis::class.java)
