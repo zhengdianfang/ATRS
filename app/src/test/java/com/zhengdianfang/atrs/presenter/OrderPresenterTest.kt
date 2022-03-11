@@ -46,4 +46,20 @@ class OrderPresenterTest {
         orderPresenter.refundOrder(123, "工作计划临时有变", { model -> actual = model }, { model -> actual = model })
         assertEquals(expected, actual)
     }
+
+    @DelicateCoroutinesApi
+    @Test
+    fun `should failure callback and receive correct model data  when BFF server is error`() {
+        val successResponse = OrderRefundResponseDTO("退票失败", ResponseCode.BFF_SERVER_ERROR)
+        val repository = mockk<OrderRemoteRepository>()
+        coEvery { repository.refundOrderRequest(123, "工作计划临时有变") } .returns(successResponse)
+        val orderPresenter = OrderPresenter()
+        orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
+        orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
+        val expected = RefundOrderModel("退票失败")
+        var actual: RefundOrderModel? = null
+        orderPresenter.refundOrder(123, "工作计划临时有变", { model -> actual = model }, { model -> actual = model })
+        assertEquals(expected, actual)
+    }
 }

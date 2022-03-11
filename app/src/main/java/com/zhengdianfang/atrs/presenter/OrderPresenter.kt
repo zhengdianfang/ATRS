@@ -21,7 +21,7 @@ open class OrderPresenter : BasePresenter() {
                 withContext(mainDispatcher) {
                   success(refundOrderModel)
                 }
-            } else {
+            } else if (response.code === ResponseCode.BFF_SERVER_ERROR || response.code === ResponseCode.ORDER_EXPIRED_CODE) {
                 withContext(mainDispatcher) {
                     fail(refundOrderModel)
                 }
