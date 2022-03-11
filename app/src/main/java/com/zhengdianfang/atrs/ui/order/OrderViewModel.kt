@@ -17,6 +17,8 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
     fun refundOrder() {
        orderPresenter.refundOrder(orderId, reasonLivData.value ?: "", success = { refundOrderModel ->
            Toast.makeText(getApplication(), refundOrderModel.tip, Toast.LENGTH_SHORT).show()
-       }, fail = {})
+       }, fail = { refundOrderModel ->
+           Toast.makeText(getApplication(), refundOrderModel.tip, Toast.LENGTH_SHORT).show()
+       })
     }
 }
