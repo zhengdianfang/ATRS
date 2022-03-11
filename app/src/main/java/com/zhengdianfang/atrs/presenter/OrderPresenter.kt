@@ -3,6 +3,7 @@ package com.zhengdianfang.atrs.presenter
 import com.zhengdianfang.atrs.presenter.model.RefundOrderModel
 import com.zhengdianfang.atrs.repository.OrderRemoteRepository
 import com.zhengdianfang.atrs.repository.dto.ResponseCode
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -11,13 +12,18 @@ import org.jetbrains.annotations.TestOnly
 open class OrderPresenter : BasePresenter() {
     private var orderRemoteRepository = OrderRemoteRepository()
 
-    fun refundOrder(orderId: Long, reason: String, success: (RefundOrderModel) -> Unit) {
+    @DelicateCoroutinesApi
+    fun refundOrder(orderId: Long, reason: String, success: (RefundOrderModel) -> Unit, fail: (RefundOrderModel) -> Unit) {
         GlobalScope.launch(ioDispatcher) {
             val response = orderRemoteRepository.refundOrderRequest(orderId, reason)
-            if (response.code === ResponseCode.SUCCESS.code) {
-                val refundOrderModel = RefundOrderModel(response.msg)
+            val refundOrderModel = RefundOrderModel(response.msg)
+            if (response.code === ResponseCode.SUCCESS) {
                 withContext(mainDispatcher) {
                   success(refundOrderModel)
+                }
+            } else {
+                withContext(mainDispatcher) {
+                    fail(refundOrderModel)
                 }
             }
         }
