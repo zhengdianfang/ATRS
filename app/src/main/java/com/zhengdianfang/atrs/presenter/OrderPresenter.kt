@@ -31,13 +31,17 @@ open class OrderPresenter : BasePresenter() {
         }
     }
 
-    fun makeInvoice(orderId: Long, makeInvoiceInformation: MakeInvoiceInformation, success: (MakeInvoiceResultModel) -> Unit) {
+    fun makeInvoice(orderId: Long, makeInvoiceInformation: MakeInvoiceInformation, success: (MakeInvoiceResultModel) -> Unit, fail: (MakeInvoiceResultModel) -> Unit) {
         GlobalScope.launch(ioDispatcher) {
             val response = orderRemoteRepository.makeVoice(orderId, makeInvoiceInformation.transformToMakeInvoiceRequestDTO())
             val makeInvoiceResultModel = MakeInvoiceResultModel(response.msg)
             if (response.code === ResponseCode.SUCCESS) {
                 withContext(mainDispatcher) {
                     success(makeInvoiceResultModel)
+                }
+            } else if (response.code === ResponseCode.TAX_ID_NOT_EXIST) {
+                withContext(mainDispatcher) {
+                    fail(makeInvoiceResultModel)
                 }
             }
         }

@@ -98,8 +98,32 @@ class OrderPresenterTest {
         var actual: MakeInvoiceResultModel? = null
         orderPresenter.makeInvoice(
             133,
-            MakeInvoiceInformation("xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356")
-        ) { resultModel -> actual = resultModel }
+            MakeInvoiceInformation("xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356"),
+         { resultModel -> actual = resultModel }, {})
         assertEquals(expected, actual)
+    }
+
+    @DelicateCoroutinesApi
+    @Test
+    fun `should failure callback and receive correct model data when user input incorrect taxId`() {
+        val successResponse = MakeInvoiceResponseDTO("开发票失败", ResponseCode.TAX_ID_NOT_EXIST)
+        val repository = mockk<OrderRemoteRepository>()
+        coEvery {
+            repository.makeVoice(
+                133,
+                MakeInvoiceRequestDTO("xxx公司", "wrong tax-id", "xxxx@gmail.com", "13245432356")
+            )
+        }.returns(successResponse)
+        val orderPresenter = OrderPresenter()
+        orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
+        orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
+        val expected = MakeInvoiceResultModel("开发票失败")
+        var actual: MakeInvoiceResultModel? = null
+        orderPresenter.makeInvoice(
+            133,
+            MakeInvoiceInformation("xxx公司", "wrong tax-id", "xxxx@gmail.com", "13245432356"), {}, { resultModel -> actual = resultModel })
+        assertEquals(expected, actual)
+
     }
 }
