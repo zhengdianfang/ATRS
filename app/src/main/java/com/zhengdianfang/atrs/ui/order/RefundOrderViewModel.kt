@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.zhengdianfang.atrs.presenter.OrderPresenter
 import kotlinx.coroutines.DelicateCoroutinesApi
 
-class OrderViewModel(application: Application) : AndroidViewModel(application) {
+class RefundOrderViewModel(application: Application) : AndroidViewModel(application) {
     private val orderPresenter =  OrderPresenter()
     private val orderId = 123L
 
