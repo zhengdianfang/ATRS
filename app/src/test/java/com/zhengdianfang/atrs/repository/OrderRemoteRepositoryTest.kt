@@ -40,7 +40,7 @@ class OrderRemoteRepositoryTest {
     }
 
     @Test
-    fun `should success response when user refund time before then ticket fly time of air ticket`() {
+    fun `should get success response when user refund time before then ticket fly time of air ticket`() {
         val expected = "{\"msg\":\"退票成功\",\"code\":0}"
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(expected))
         runBlocking {
@@ -51,7 +51,7 @@ class OrderRemoteRepositoryTest {
     }
 
     @Test
-    fun `should failure response when user refund time after then ticket fly time of air ticket`() {
+    fun `should get failure response when user refund time after then ticket fly time of air ticket`() {
         val expected = "{\"msg\":\"退票失败\",\"code\": -10}"
         mockWebServer.enqueue(MockResponse().setResponseCode(400).setBody(expected))
         runBlocking {
@@ -65,7 +65,7 @@ class OrderRemoteRepositoryTest {
     }
 
     @Test
-    fun `should failure response when BFF server is error`() {
+    fun `should get failure response when BFF server is error`() {
         val expected = "{\"msg\":\"退票失败\",\"code\": -100}"
         mockWebServer.enqueue(MockResponse().setResponseCode(500).setBody(expected))
         runBlocking {
@@ -75,6 +75,17 @@ class OrderRemoteRepositoryTest {
             } catch (e: HttpException) {
                 assertEquals(expected, e.response()?.errorBody()?.string())
             }
+        }
+    }
+
+    @Test
+    fun `should get success response when user apply make invoice of order`() {
+        val expected = "{\"msg\":\"开发票成功\",\"code\":0}"
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(expected))
+        runBlocking {
+            val actual = orderRemoteRepository.makeVoice(133, "xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356")
+            assertEquals("/flights-contract/orders/133/invoice", mockWebServer.takeRequest().path)
+            assertEquals(expected, gson.toJson(actual))
         }
     }
 }

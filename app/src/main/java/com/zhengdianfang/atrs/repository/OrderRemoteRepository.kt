@@ -2,6 +2,8 @@ package com.zhengdianfang.atrs.repository
 
 import com.zhengdianfang.atrs.repository.api.ApiClient
 import com.zhengdianfang.atrs.repository.api.OrderApis
+import com.zhengdianfang.atrs.repository.dto.MakeInvoiceRequestDTO
+import com.zhengdianfang.atrs.repository.dto.MakeInvoiceResponseDTO
 import com.zhengdianfang.atrs.repository.dto.OrderRefundRequestDTO
 import com.zhengdianfang.atrs.repository.dto.OrderRefundResponseDTO
 import org.jetbrains.annotations.TestOnly
@@ -12,8 +14,13 @@ open class OrderRemoteRepository {
         return orderApis.refundOrder(orderId, OrderRefundRequestDTO(reason))
     }
 
+    suspend fun makeVoice(orderId: Long, companyName: String, taxID: String, email: String, phone: String): MakeInvoiceResponseDTO {
+        return orderApis.makeVoice(orderId , MakeInvoiceRequestDTO(companyName, taxID, email, phone))
+    }
+
     @TestOnly
     fun setOrderApis(apis: OrderApis) {
         this.orderApis = apis
     }
+
 }
