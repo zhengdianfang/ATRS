@@ -16,8 +16,10 @@ class MakeInvoiceViewModel(private val context: Context) : ViewModel() {
     private val orderPresenter = OrderPresenter()
 
     fun makeInvoice() {
-       orderPresenter.makeInvoice(orderId, MakeInvoiceInformation(companyName.value!!, taxId.value!!, email.value!!, phone.value!!)) { result ->
+       orderPresenter.makeInvoice(orderId, MakeInvoiceInformation(companyName.value!!, taxId.value!!, email.value!!, phone.value!!), { result ->
            Toast.makeText(context, result.tip, Toast.LENGTH_SHORT).show()
-       }
+       }, { result ->
+           Toast.makeText(context, result.tip, Toast.LENGTH_SHORT).show()
+       })
     }
 }
