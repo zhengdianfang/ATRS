@@ -89,4 +89,18 @@ class OrderRemoteRepositoryTest {
             assertEquals(expected, gson.toJson(actual))
         }
     }
+
+    @Test
+    fun `should get failure response when user apply make invoice of order and information is incorrect`() {
+        val expected = "{\"msg\":\"开发票失败\",\"code\":-200}"
+        mockWebServer.enqueue(MockResponse().setResponseCode(400).setBody(expected))
+        runBlocking {
+            try {
+                val actual = orderRemoteRepository.makeVoice(133, MakeInvoiceRequestDTO("xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356"))
+                assertEquals("/flights-contract/orders/133/invoice", mockWebServer.takeRequest().path)
+            } catch (e: HttpException) {
+                assertEquals(expected, e.response()?.errorBody()?.string())
+            }
+        }
+    }
 }
