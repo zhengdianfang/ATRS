@@ -63,4 +63,18 @@ class OrderRemoteRepositoryTest {
             }
         }
     }
+
+    @Test
+    fun `should failure response when BFF server is error`() {
+        val expected = "{\"msg\":\"退票失败\",\"code\": -100}"
+        mockWebServer.enqueue(MockResponse().setResponseCode(500).setBody(expected))
+        runBlocking {
+            try {
+                orderRemoteRepository.refundOrderRequest(133, "工作计划临时有变")
+                assertEquals("/flights-contract/orders/133/refund", mockWebServer.takeRequest().path)
+            } catch (e: HttpException) {
+                assertEquals(expected, e.response()?.errorBody()?.string())
+            }
+        }
+    }
 }
