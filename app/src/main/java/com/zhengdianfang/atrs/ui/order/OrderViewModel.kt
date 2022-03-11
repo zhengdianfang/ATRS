@@ -11,7 +11,8 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
     private val orderPresenter =  OrderPresenter()
     private val orderId = 123L
 
-    private val reasonLivData = MutableLiveData<String>()
+    val reasonLivData = MutableLiveData<String>()
+    val refundButtonDisabled = MutableLiveData<Boolean>(false)
 
     @DelicateCoroutinesApi
     fun refundOrder() {
@@ -19,6 +20,7 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
            Toast.makeText(getApplication(), refundOrderModel.tip, Toast.LENGTH_SHORT).show()
        }, fail = { refundOrderModel ->
            Toast.makeText(getApplication(), refundOrderModel.tip, Toast.LENGTH_SHORT).show()
+           refundButtonDisabled.postValue(true)
        })
     }
 }

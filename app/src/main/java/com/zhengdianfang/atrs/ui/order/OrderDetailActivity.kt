@@ -1,6 +1,7 @@
 package com.zhengdianfang.atrs.ui.order
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.zhengdianfang.atrs.R
@@ -12,8 +13,12 @@ class OrderDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.order_detail_layout)
 
-        findViewById<Button>(R.id.refundOrderButton).setOnClickListener {
+        val refundOrderButton = findViewById<Button>(R.id.refundOrderButton)
+        refundOrderButton.setOnClickListener {
             orderViewModel.refundOrder()
         }
+       orderViewModel.refundButtonDisabled.observe(this) { disabled ->
+           refundOrderButton.visibility = if (disabled) View.INVISIBLE else View.VISIBLE
+       }
     }
 }
