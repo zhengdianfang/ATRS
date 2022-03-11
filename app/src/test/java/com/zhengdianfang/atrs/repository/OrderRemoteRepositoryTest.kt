@@ -2,6 +2,7 @@ package com.zhengdianfang.atrs.repository
 
 import com.google.gson.Gson
 import com.zhengdianfang.atrs.repository.api.OrderApis
+import com.zhengdianfang.atrs.repository.dto.MakeInvoiceRequestDTO
 import com.zhengdianfang.atrs.repository.dto.ResponseCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -79,11 +80,11 @@ class OrderRemoteRepositoryTest {
     }
 
     @Test
-    fun `should get success response when user apply make invoice of order`() {
+    fun `should get success response when user apply make invoice of order and information is correct`() {
         val expected = "{\"msg\":\"开发票成功\",\"code\":0}"
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(expected))
         runBlocking {
-            val actual = orderRemoteRepository.makeVoice(133, "xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356")
+            val actual = orderRemoteRepository.makeVoice(133, MakeInvoiceRequestDTO("xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356"))
             assertEquals("/flights-contract/orders/133/invoice", mockWebServer.takeRequest().path)
             assertEquals(expected, gson.toJson(actual))
         }

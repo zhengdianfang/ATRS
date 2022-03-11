@@ -14,8 +14,8 @@ open class OrderRemoteRepository {
         return orderApis.refundOrder(orderId, OrderRefundRequestDTO(reason))
     }
 
-    suspend fun makeVoice(orderId: Long, companyName: String, taxID: String, email: String, phone: String): MakeInvoiceResponseDTO {
-        return orderApis.makeVoice(orderId , MakeInvoiceRequestDTO(companyName, taxID, email, phone))
+    suspend fun makeVoice(orderId: Long, requestBody: MakeInvoiceRequestDTO): MakeInvoiceResponseDTO {
+        return orderApis.makeVoice(orderId , requestBody)
     }
 
     @TestOnly
