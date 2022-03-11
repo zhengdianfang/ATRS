@@ -14,7 +14,7 @@ import org.junit.Test
 class OrderPresenterTest {
 
     @Test
-    fun `should  callback when receive successful http response`() {
+    fun `should success callback and receive correct model data  when receive successful http response`() {
         val successResponse = OrderRefundResponseDTO("退票成功", 0)
         val repository = mockk<OrderRemoteRepository>()
         coEvery { repository.refundOrderRequest(123, "工作计划临时有变") } .returns(successResponse)

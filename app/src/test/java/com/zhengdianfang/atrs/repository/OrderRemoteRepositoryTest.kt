@@ -2,6 +2,7 @@ package com.zhengdianfang.atrs.repository
 
 import com.google.gson.Gson
 import com.zhengdianfang.atrs.repository.api.OrderApis
+import com.zhengdianfang.atrs.repository.dto.ResponseCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
@@ -10,8 +11,10 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 class OrderRemoteRepositoryTest {
@@ -44,6 +47,20 @@ class OrderRemoteRepositoryTest {
             val actual = orderRemoteRepository.refundOrderRequest(133, "工作计划临时有变")
             assertEquals("/flights-contract/orders/133/refund", mockWebServer.takeRequest().path)
             assertEquals(expected, gson.toJson(actual))
+        }
+    }
+
+    @Test
+    fun `should failure response when user refund time after then ticket fly time of air ticket`() {
+        val expected = "{\"msg\":\"退票失败\",\"code\": -10}"
+        mockWebServer.enqueue(MockResponse().setResponseCode(400).setBody(expected))
+        runBlocking {
+            try {
+                orderRemoteRepository.refundOrderRequest(133, "工作计划临时有变")
+                assertEquals("/flights-contract/orders/133/refund", mockWebServer.takeRequest().path)
+            } catch (e: HttpException) {
+                assertEquals(expected, e.response()?.errorBody()?.string())
+            }
         }
     }
 }
