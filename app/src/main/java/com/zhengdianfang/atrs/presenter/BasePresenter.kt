@@ -6,7 +6,7 @@ import org.jetbrains.annotations.TestOnly
 
 open abstract class BasePresenter {
     var ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-    var mainDispatcher: CoroutineDispatcher = Dispatchers.IO
+    var mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
     @TestOnly
     fun setTestIOProvideDispatcher(testDispatcher: CoroutineDispatcher) {

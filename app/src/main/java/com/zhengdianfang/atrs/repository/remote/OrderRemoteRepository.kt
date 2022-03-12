@@ -1,11 +1,11 @@
-package com.zhengdianfang.atrs.repository
+package com.zhengdianfang.atrs.repository.remote
 
-import com.zhengdianfang.atrs.repository.api.ApiClient
-import com.zhengdianfang.atrs.repository.api.OrderApis
-import com.zhengdianfang.atrs.repository.dto.MakeInvoiceRequestDTO
-import com.zhengdianfang.atrs.repository.dto.MakeInvoiceResponseDTO
-import com.zhengdianfang.atrs.repository.dto.OrderRefundRequestDTO
-import com.zhengdianfang.atrs.repository.dto.OrderRefundResponseDTO
+import com.zhengdianfang.atrs.repository.remote.api.ApiClient
+import com.zhengdianfang.atrs.repository.remote.api.OrderApis
+import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceRequestDTO
+import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceResponseDTO
+import com.zhengdianfang.atrs.repository.remote.dto.OrderRefundRequestDTO
+import com.zhengdianfang.atrs.repository.remote.dto.OrderRefundResponseDTO
 import org.jetbrains.annotations.TestOnly
 
 open class OrderRemoteRepository {

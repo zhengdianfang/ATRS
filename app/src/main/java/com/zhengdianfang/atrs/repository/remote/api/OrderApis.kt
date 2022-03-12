@@ -1,9 +1,9 @@
-package com.zhengdianfang.atrs.repository.api
+package com.zhengdianfang.atrs.repository.remote.api
 
-import com.zhengdianfang.atrs.repository.dto.MakeInvoiceRequestDTO
-import com.zhengdianfang.atrs.repository.dto.MakeInvoiceResponseDTO
-import com.zhengdianfang.atrs.repository.dto.OrderRefundRequestDTO
-import com.zhengdianfang.atrs.repository.dto.OrderRefundResponseDTO
+import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceRequestDTO
+import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceResponseDTO
+import com.zhengdianfang.atrs.repository.remote.dto.OrderRefundRequestDTO
+import com.zhengdianfang.atrs.repository.remote.dto.OrderRefundResponseDTO
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path

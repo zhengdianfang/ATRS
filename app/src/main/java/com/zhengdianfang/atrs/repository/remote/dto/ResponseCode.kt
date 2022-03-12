@@ -1,4 +1,4 @@
-package com.zhengdianfang.atrs.repository.dto
+package com.zhengdianfang.atrs.repository.remote.dto
 
 object ResponseCode {
     val SUCCESS = 0

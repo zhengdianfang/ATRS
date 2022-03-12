@@ -1,9 +1,8 @@
-package com.zhengdianfang.atrs.repository
+package com.zhengdianfang.atrs.repository.remote
 
 import com.google.gson.Gson
-import com.zhengdianfang.atrs.repository.api.OrderApis
-import com.zhengdianfang.atrs.repository.dto.MakeInvoiceRequestDTO
-import com.zhengdianfang.atrs.repository.dto.ResponseCode
+import com.zhengdianfang.atrs.repository.remote.api.OrderApis
+import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceRequestDTO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
@@ -15,7 +14,6 @@ import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 class OrderRemoteRepositoryTest {
@@ -106,7 +104,7 @@ class OrderRemoteRepositoryTest {
 
     @Test
     fun `should get failure response when user make invoice and BFF server is error`() {
-        val expected = "{\"msg\":\"开发票失败\",\"code\":-100}"
+        val expected = "{\"msg\":\"服务器不可用\",\"code\":-100}"
         mockWebServer.enqueue(MockResponse().setResponseCode(500).setBody(expected))
         runBlocking {
             try {
