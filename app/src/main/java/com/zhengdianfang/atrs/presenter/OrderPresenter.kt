@@ -50,25 +50,23 @@ open class OrderPresenter : BasePresenter() {
         orderId: Long,
         makeInvoiceInformation: MakeInvoiceInformation,
         success: (MakeInvoiceResultModel) -> Unit,
-        fail: (MakeInvoiceResultModel) -> Unit
+        fail: (MakeInvoiceResultModel) -> Unit,
+        retry: ((id: Long) -> Unit)? = null,
     ) {
         GlobalScope.launch(ioDispatcher) {
             val response = orderRemoteRepository.makeVoice(
                 orderId,
                 makeInvoiceInformation.transformToMakeInvoiceRequestDTO()
             )
-            Log.d("ATRS", "response ${response?.code}")
             val makeInvoiceResultModel = MakeInvoiceResultModel(response.msg)
             when (response.code) {
                 ResponseCode.SUCCESS -> {
                     withContext(mainDispatcher) {
-                        AppApplication.instance.stopService(Intent(AppApplication.instance, RetryScheduleService::class.java))
                         success(makeInvoiceResultModel)
                     }
                 }
                 ResponseCode.TAX_ID_NOT_EXIST -> {
                     withContext(mainDispatcher) {
-                        AppApplication.instance.stopService(Intent(AppApplication.instance, RetryScheduleService::class.java))
                         fail(makeInvoiceResultModel)
                     }
                 }
@@ -82,7 +80,7 @@ open class OrderPresenter : BasePresenter() {
                     )
                     withContext(mainDispatcher) {
                         if (id > 0) {
-                            AppApplication.instance.startService(Intent(AppApplication.instance, RetryScheduleService::class.java).putExtra("scheduleId", id))
+                            retry?.invoke(id)
                         }
                         success(MakeInvoiceResultModel("开发票成功"))
                     }

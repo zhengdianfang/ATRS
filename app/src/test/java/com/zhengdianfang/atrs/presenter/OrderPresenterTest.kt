@@ -12,6 +12,7 @@ import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceRequestDTO
 import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceResponseDTO
 import com.zhengdianfang.atrs.repository.remote.dto.OrderRefundResponseDTO
 import com.zhengdianfang.atrs.repository.remote.dto.ResponseCode
+import com.zhengdianfang.atrs.services.RetryScheduleService
 import io.mockk.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +29,10 @@ class OrderPresenterTest {
         val successResponse = OrderRefundResponseDTO("退票成功", ResponseCode.SUCCESS)
         val repository = mockk<OrderRemoteRepository>()
         coEvery { repository.refundOrderRequest(133, "工作计划临时有变") }.returns(successResponse)
+        val retryScheduleDBRepository = mockk<RetryScheduleDBRepository>()
         val orderPresenter = OrderPresenter()
         orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestRetryScheduleRepository(retryScheduleDBRepository)
         orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
         orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
         val expected = RefundOrderResultModel("退票成功")
@@ -48,8 +51,10 @@ class OrderPresenterTest {
         val successResponse = OrderRefundResponseDTO("退票失败", ResponseCode.ORDER_EXPIRED_CODE)
         val repository = mockk<OrderRemoteRepository>()
         coEvery { repository.refundOrderRequest(133, "工作计划临时有变") }.returns(successResponse)
+        val retryScheduleDBRepository = mockk<RetryScheduleDBRepository>()
         val orderPresenter = OrderPresenter()
         orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestRetryScheduleRepository(retryScheduleDBRepository)
         orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
         orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
         val expected = RefundOrderResultModel("退票失败")
@@ -68,8 +73,10 @@ class OrderPresenterTest {
         val successResponse = OrderRefundResponseDTO("退票失败", ResponseCode.BFF_SERVER_ERROR)
         val repository = mockk<OrderRemoteRepository>()
         coEvery { repository.refundOrderRequest(133, "工作计划临时有变") }.returns(successResponse)
+        val retryScheduleDBRepository = mockk<RetryScheduleDBRepository>()
         val orderPresenter = OrderPresenter()
         orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestRetryScheduleRepository(retryScheduleDBRepository)
         orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
         orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
         val expected = RefundOrderResultModel("退票失败")
@@ -93,8 +100,10 @@ class OrderPresenterTest {
                 MakeInvoiceRequestDTO("xxx公司", "12312312312312", "xxxx@gmail.com", "13245432356")
             )
         }.returns(successResponse)
+         val retryScheduleDBRepository = mockk<RetryScheduleDBRepository>()
         val orderPresenter = OrderPresenter()
         orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestRetryScheduleRepository(retryScheduleDBRepository)
         orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
         orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
         val expected = MakeInvoiceResultModel("开发票成功")
@@ -117,8 +126,10 @@ class OrderPresenterTest {
                 MakeInvoiceRequestDTO("xxx公司", "wrong tax-id", "xxxx@gmail.com", "13245432356")
             )
         }.returns(successResponse)
+        val retryScheduleDBRepository = mockk<RetryScheduleDBRepository>()
         val orderPresenter = OrderPresenter()
         orderPresenter.setTestOrderRemoteRepository(repository)
+        orderPresenter.setTestRetryScheduleRepository(retryScheduleDBRepository)
         orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
         orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
         val expected = MakeInvoiceResultModel("开发票失败")

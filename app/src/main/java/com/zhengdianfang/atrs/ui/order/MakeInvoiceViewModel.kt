@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.zhengdianfang.atrs.presenter.OrderPresenter
 import com.zhengdianfang.atrs.presenter.model.MakeInvoiceInformation
+import com.zhengdianfang.atrs.services.RetryScheduleService
 
 class MakeInvoiceViewModel(private val context: Context) : ViewModel() {
     val companyName = MutableLiveData("")
@@ -20,6 +21,6 @@ class MakeInvoiceViewModel(private val context: Context) : ViewModel() {
            Toast.makeText(context, result.tip, Toast.LENGTH_SHORT).show()
        }, { result ->
            Toast.makeText(context, result.tip, Toast.LENGTH_SHORT).show()
-       })
+       },{ retryId -> RetryScheduleService.start(retryId)})
     }
 }

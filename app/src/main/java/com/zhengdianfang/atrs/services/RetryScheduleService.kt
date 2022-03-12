@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.google.gson.Gson
+import com.zhengdianfang.atrs.AppApplication
 import com.zhengdianfang.atrs.presenter.model.MakeInvoiceInformation
 import com.zhengdianfang.atrs.repository.db.RetryScheduleDBRepository
 import com.zhengdianfang.atrs.repository.db.entity.ScheduleType
@@ -15,6 +16,18 @@ import kotlinx.coroutines.*
 class RetryScheduleService : Service() {
     private val retryScheduleRepository = RetryScheduleDBRepository()
     private val orderRemoteRepository = OrderRemoteRepository()
+
+    companion object {
+        fun start(id: Long) {
+            AppApplication.instance.startService(
+                Intent(
+                    AppApplication.instance,
+                    RetryScheduleService::class.java
+                ).putExtra("scheduleId", id)
+            )
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -29,12 +42,21 @@ class RetryScheduleService : Service() {
                 if (schedule != null && schedule.taskType == ScheduleType.MAKE_INVOICE && schedule.retryCount > 0) {
                     schedule.retryCount -= 1
                     retryScheduleRepository.updateSchedule(schedule)
-                    val response = orderRemoteRepository.makeVoice(schedule.requestId, Gson().fromJson(schedule.requestBody, MakeInvoiceInformation::class.java).transformToMakeInvoiceRequestDTO())
+                    val response = orderRemoteRepository.makeVoice(
+                        schedule.requestId,
+                        Gson().fromJson(schedule.requestBody, MakeInvoiceInformation::class.java)
+                            .transformToMakeInvoiceRequestDTO()
+                    )
                     if (response.code == ResponseCode.SUCCESS) {
                         retryScheduleRepository.deleteSchedule(schedule)
                         stopSelf()
                     } else {
-                        startService(Intent(this@RetryScheduleService, RetryScheduleService::class.java).putExtra("scheduleId", scheduleId))
+                        startService(
+                            Intent(
+                                this@RetryScheduleService,
+                                RetryScheduleService::class.java
+                            ).putExtra("scheduleId", scheduleId)
+                        )
                     }
                 } else {
                     stopSelf()
