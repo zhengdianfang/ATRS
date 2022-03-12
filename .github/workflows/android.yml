@@ -6,13 +6,13 @@ on:
   push:
 ## 2
 jobs:
-  build:
+  android_build:
     runs-on: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Unit tests
-        run: ./gradlew test
+      - name: Android build
+        run: ./gradlew build
   ## 3
   unit_tests:
     runs-on: [ubuntu-latest]
