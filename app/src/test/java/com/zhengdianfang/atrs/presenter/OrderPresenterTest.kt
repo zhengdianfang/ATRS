@@ -118,7 +118,7 @@ class OrderPresenterTest {
     @DelicateCoroutinesApi
     @Test
     fun `should failure callback and receive correct model data when user input incorrect taxId`() {
-        val successResponse = MakeInvoiceResponseDTO("开发票失败", ResponseCode.TAX_ID_NOT_EXIST)
+        val successResponse = MakeInvoiceResponseDTO("开发票失败，税号不存在", ResponseCode.TAX_ID_NOT_EXIST)
         val repository = mockk<OrderRemoteRepository>()
         coEvery {
             repository.makeVoice(
@@ -132,7 +132,7 @@ class OrderPresenterTest {
         orderPresenter.setTestRetryScheduleRepository(retryScheduleDBRepository)
         orderPresenter.setTestIOProvideDispatcher(Dispatchers.Unconfined)
         orderPresenter.setTestMainProvideDispatcher(Dispatchers.Unconfined)
-        val expected = MakeInvoiceResultModel("开发票失败")
+        val expected = MakeInvoiceResultModel("开发票失败，税号不存在")
         var actual: MakeInvoiceResultModel? = null
         orderPresenter.makeInvoice(
             133,
