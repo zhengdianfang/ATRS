@@ -4,9 +4,13 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.zhengdianfang.atrs.presenter.OrderPresenter
 import com.zhengdianfang.atrs.presenter.model.MakeInvoiceInformation
+import com.zhengdianfang.atrs.repository.remote.OrderRemoteRepository
 import com.zhengdianfang.atrs.services.RetryScheduleService
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MakeInvoiceViewModel(private val context: Context) : ViewModel() {
     val companyName = MutableLiveData("")
@@ -15,12 +19,16 @@ class MakeInvoiceViewModel(private val context: Context) : ViewModel() {
     val phone = MutableLiveData("")
     val orderId = 133L
     private val orderPresenter = OrderPresenter()
+    private val orderRemoteRepository = OrderRemoteRepository()
 
     fun makeInvoice() {
-       orderPresenter.makeInvoice(orderId, MakeInvoiceInformation(companyName.value!!, taxId.value!!, email.value!!, phone.value!!), { result ->
-           Toast.makeText(context, result.tip, Toast.LENGTH_SHORT).show()
-       }, { result ->
-           Toast.makeText(context, result.tip, Toast.LENGTH_SHORT).show()
-       },{ retryId -> RetryScheduleService.start(retryId)})
+        viewModelScope.launch {
+            orderPresenter.makeInvoice(
+                orderId,
+                MakeInvoiceInformation(companyName.value!!, taxId.value!!, email.value!!, phone.value!!)
+            ).collect {
+                Toast.makeText(context, it.tip, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

@@ -11,86 +11,55 @@ import com.zhengdianfang.atrs.repository.db.RetryScheduleDBRepository
 import com.zhengdianfang.atrs.repository.db.entity.RetrySchedule
 import com.zhengdianfang.atrs.repository.db.entity.ScheduleType
 import com.zhengdianfang.atrs.repository.remote.OrderRemoteRepository
+import com.zhengdianfang.atrs.repository.remote.dto.MakeInvoiceResponseDTO
+import com.zhengdianfang.atrs.repository.remote.dto.OrderRefundResponseDTO
 import com.zhengdianfang.atrs.repository.remote.dto.ResponseCode
 import com.zhengdianfang.atrs.services.RetryScheduleService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
+import retrofit2.HttpException
 
 open class OrderPresenter : BasePresenter() {
     private var testRetryScheduleDBRepository: RetryScheduleDBRepository? = null
     private var orderRemoteRepository = OrderRemoteRepository()
-    private val retryScheduleRepository by lazy { testRetryScheduleDBRepository ?: RetryScheduleDBRepository() }
-
-    @DelicateCoroutinesApi
-    fun refundOrder(
-        orderId: Long,
-        reason: String,
-        success: (RefundOrderResultModel) -> Unit,
-        fail: (RefundOrderResultModel) -> Unit
-    ) {
-        GlobalScope.launch(ioDispatcher) {
-            val response = orderRemoteRepository.refundOrderRequest(orderId, reason)
-            val refundOrderModel = RefundOrderResultModel(response.msg)
-            if (response.code === ResponseCode.SUCCESS) {
-                withContext(mainDispatcher) {
-                    success(refundOrderModel)
-                }
-            } else if (response.code === ResponseCode.BFF_SERVER_ERROR || response.code === ResponseCode.ORDER_EXPIRED_CODE) {
-                withContext(mainDispatcher) {
-                    fail(refundOrderModel)
-                }
-            }
-        }
+    private val retryScheduleRepository by lazy {
+        testRetryScheduleDBRepository ?: RetryScheduleDBRepository()
     }
 
-    fun makeInvoice(
+    @DelicateCoroutinesApi
+    fun refundOrder(orderId: Long, reason: String) {
+//        GlobalScope.launch(ioDispatcher) {
+//            val response =
+//            val refundOrderModel = RefundOrderResultModel(response.msg)
+//            if (response.code === ResponseCode.SUCCESS) {
+//                withContext(mainDispatcher) {
+//                    success(refundOrderModel)
+//                }
+//            } else if (response.code === ResponseCode.BFF_SERVER_ERROR || response.code === ResponseCode.ORDER_EXPIRED_CODE) {
+//                withContext(mainDispatcher) {
+//                    fail(refundOrderModel)
+//                }
+//            }
+//        }
+    }
+
+    suspend fun makeInvoice(
         orderId: Long,
         makeInvoiceInformation: MakeInvoiceInformation,
-        success: (MakeInvoiceResultModel) -> Unit,
-        fail: (MakeInvoiceResultModel) -> Unit,
-        retry: ((id: Long) -> Unit)? = null,
-    ) {
-        GlobalScope.launch(ioDispatcher) {
-            val response = orderRemoteRepository.makeVoice(
-                orderId,
-                makeInvoiceInformation.transformToMakeInvoiceRequestDTO()
-            )
-            val makeInvoiceResultModel = MakeInvoiceResultModel(response.msg)
-            when (response.code) {
-                ResponseCode.SUCCESS -> {
-                    withContext(mainDispatcher) {
-                        success(makeInvoiceResultModel)
-                    }
-                }
-                ResponseCode.TAX_ID_NOT_EXIST -> {
-                    withContext(mainDispatcher) {
-                        fail(makeInvoiceResultModel)
-                    }
-                }
-                ResponseCode.BFF_SERVER_ERROR -> {
-                    val id = retryScheduleRepository.insertSchedule(
-                        RetrySchedule(
-                            taskType = ScheduleType.MAKE_INVOICE,
-                            requestId = orderId,
-                            requestBody = Gson().toJson(makeInvoiceInformation)
-                        )
-                    )
-                    withContext(mainDispatcher) {
-                        if (id > 0) {
-                            retry?.invoke(id)
-                        }
-                        success(MakeInvoiceResultModel("开发票成功"))
-                    }
-                }
-                else -> {
-                    AppApplication.instance.stopService(Intent(AppApplication.instance, RetryScheduleService::class.java))
-                }
-            }
+    ): Flow<MakeInvoiceResultModel> {
+        return orderRemoteRepository.makeVoice(
+            orderId,
+            makeInvoiceInformation.transformToMakeInvoiceRequestDTO()
+        ).map {
+            val makeInvoiceResultModel = MakeInvoiceResultModel(it.msg)
+            makeInvoiceResultModel
         }
-
     }
 
     @TestOnly
